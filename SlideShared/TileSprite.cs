@@ -11,24 +11,49 @@ namespace SlideShared
         public TileSprite(Game game, SpriteBatch batch)
             :base(game, batch)
         {
-            setTilePosition(0, 0);
-            SetAbsoluteSize(SlideGame.TILESIZE, SlideGame.TILESIZE);
         }
 
-        public void setTilePosition(int x, int y)
+        public Vector2 GetTilePosition()
         {
-            setTileX(x);
-            setTileY(y);
+            return new Vector2(GetTileX(), GetTileY());
         }
 
-        public void setTileX(int x)
+        public void SetTilePosition(int x, int y)
         {
-            X = SlideGame.TILESIZE * (x + 0.5f);
+            SetTileX(x);
+            SetTileY(y);
         }
 
-        public void setTileY(int y)
+        public int GetTileX()
         {
-            Y = SlideGame.TILESIZE * (y + 0.5f);
+            return (int)((X - (0.5f * SlideGame.TILESIZE)) / SlideGame.TILESIZE);
+        }
+
+        public void SetTileX(int x)
+        {
+            X = x * SlideGame.TILESIZE + 0.5f * GetAbsoluteSize().X;
+        }
+
+        public int GetTileY()
+        {
+            return (int)((Y - (0.5f * SlideGame.TILESIZE)) / SlideGame.TILESIZE);
+        }
+
+        public void SetTileY(int y)
+        {
+            Y = y * SlideGame.TILESIZE + 0.5f * GetAbsoluteSize().Y;
+        }
+
+        public void SetTileCount(int xTiles, int yTiles)
+        {
+            SetAbsoluteSize(xTiles * SlideGame.TILESIZE, yTiles * SlideGame.TILESIZE);
+        }
+
+        public Vector2 GetTileCount()
+        {
+            return new Vector2(
+                (int)(GetAbsoluteSize().X / SlideGame.TILESIZE),
+                (int)(GetAbsoluteSize().Y / SlideGame.TILESIZE));
         }
     }
 }

@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections.Generic;
 
 namespace SlideShared
@@ -52,6 +53,13 @@ namespace SlideShared
             base.Initialize();
         }
 
+        public T GetRandomEnumValue<T>(Random random)
+        {
+            int count = Enum.GetValues(typeof(T)).Length;
+            int value = (int)(random.NextDouble() * count);
+            return (T)Enum.GetValues(typeof(T)).GetValue(value);
+        }
+
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
         /// all of your content.
@@ -61,11 +69,30 @@ namespace SlideShared
             batch = new SpriteBatch(GraphicsDevice);
             font = Content.Load<SpriteFont>("Fonts/arial");
 
+            TileAtlas.LoadTextures(Content);
+
+            var map = new TileMap(this, batch, WIDTH / TILESIZE, HEIGHT / TILESIZE);
+            Components.Add(map);
+            sprites.Add(map);
+
+            var random = new Random();
+            for(int x=0; x<map.Width; ++x)
+            {
+                for(int y=0; y<map.Height; ++y)
+                {
+                    map.Tiles[x][y].SetTileType(GetRandomEnumValue<TileType>(random));
+                }
+            }
+            map.Tiles[1][1].SetTileType(TileType.Stop);
+            map.Tiles[2][2].SetTileType(TileType.Wall);
+            map.Tiles[3][3].SetTileType(TileType.Speed);
+
             player = new TileSprite(this, batch);
             player.Texture = Content.Load<Texture2D>("Textures/player");
-            player.setTilePosition(1, 1);
+            player.SetTileCount(1, 1);
+            player.SetTilePosition(0, 0);
             Components.Add(player);
-            sprites.Add(player);
+            sprites.Add(player);            
         }
 
         /// <summary>

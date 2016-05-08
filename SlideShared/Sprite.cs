@@ -6,8 +6,8 @@ namespace SlideShared
 {
     public class Sprite : GameComponent
     {
-        private SpriteBatch batch;
-        private Vector2 center;
+        protected SpriteBatch batch { get; private set; }
+        protected Vector2 center { get; private set; }
 
         // Texture.
         public Texture2D Texture { get; set; }
@@ -55,6 +55,11 @@ namespace SlideShared
             base.Update(gameTime);
         }
 
+        public Vector2 GetAbsoluteSize()
+        {
+            return new Vector2(Texture.Width * HorizontalScale, Texture.Height * VerticalScale);
+        }
+
         public void SetAbsoluteSize(float width, float height)
         {
             HorizontalScale = width / Texture.Width;
@@ -62,7 +67,7 @@ namespace SlideShared
         }
 
         // Batch must be started before draw call.
-        public void Draw()
+        public virtual void Draw()
         {
             if (Visible && Texture != null)
             {

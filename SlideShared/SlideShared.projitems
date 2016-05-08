@@ -11,6 +11,9 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)SlideGame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sprite.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TileAtlas.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TileMap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TileSprite.cs" />
   </ItemGroup>
 </Project>
