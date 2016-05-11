@@ -6,7 +6,6 @@ namespace SlideShared
 {
     public class Sprite : GameComponent
     {
-        protected SpriteBatch batch { get; private set; }
         protected Vector2 center { get; private set; }
 
         // Texture.
@@ -29,11 +28,9 @@ namespace SlideShared
         // Show / hide sprite.
         public bool Visible { get; set; }
 
-        public Sprite(Game game, SpriteBatch batch)
+        public Sprite(Game game)
         : base(game)
         {
-            this.batch = batch;
-
             Position = Vector2.Zero;
             Rotation = 0.0f;
             Scale = Vector2.One;
@@ -71,7 +68,7 @@ namespace SlideShared
         {
             if (Visible && Texture != null)
             {
-                batch.Draw(
+                ((SlideGame)Game).Batch.Draw(
                     texture: Texture,
                     position: Position,
                     sourceRectangle: SubTextureRect,

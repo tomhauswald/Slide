@@ -16,10 +16,12 @@ namespace SlideShared
 
     public class Tile : TileSprite
     {
+        public const int SIZE = 40;
+
         private TileType type;
 
-        public Tile(Game game, SpriteBatch batch, int x, int y)
-        : base(game, batch)
+        public Tile(Game game, int x, int y)
+        : base(game)
         {
             SetTileType(TileType.Plain);
             SetTileCount(1, 1);

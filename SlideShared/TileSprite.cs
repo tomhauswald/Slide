@@ -8,8 +8,8 @@ namespace SlideShared
 {
     public class TileSprite : Sprite
     {
-        public TileSprite(Game game, SpriteBatch batch)
-            :base(game, batch)
+        public TileSprite(Game game)
+            :base(game)
         {
         }
 
@@ -26,34 +26,34 @@ namespace SlideShared
 
         public int GetTileX()
         {
-            return (int)((X - (0.5f * SlideGame.TILESIZE)) / SlideGame.TILESIZE);
+            return (int)((X - (0.5f * Tile.SIZE)) / Tile.SIZE);
         }
 
         public void SetTileX(int x)
         {
-            X = x * SlideGame.TILESIZE + 0.5f * GetAbsoluteSize().X;
+            X = x * Tile.SIZE + 0.5f * GetAbsoluteSize().X;
         }
 
         public int GetTileY()
         {
-            return (int)((Y - (0.5f * SlideGame.TILESIZE)) / SlideGame.TILESIZE);
+            return (int)((Y - (0.5f * Tile.SIZE)) / Tile.SIZE);
         }
 
         public void SetTileY(int y)
         {
-            Y = y * SlideGame.TILESIZE + 0.5f * GetAbsoluteSize().Y;
+            Y = y * Tile.SIZE + 0.5f * GetAbsoluteSize().Y;
         }
 
         public void SetTileCount(int xTiles, int yTiles)
         {
-            SetAbsoluteSize(xTiles * SlideGame.TILESIZE, yTiles * SlideGame.TILESIZE);
+            SetAbsoluteSize(xTiles * Tile.SIZE, yTiles * Tile.SIZE);
         }
 
         public Vector2 GetTileCount()
         {
             return new Vector2(
-                (int)(GetAbsoluteSize().X / SlideGame.TILESIZE),
-                (int)(GetAbsoluteSize().Y / SlideGame.TILESIZE));
+                (int)(GetAbsoluteSize().X / Tile.SIZE),
+                (int)(GetAbsoluteSize().Y / Tile.SIZE));
         }
     }
 }

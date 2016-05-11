@@ -13,13 +13,14 @@ namespace SlideShared
     {
         public const int WIDTH = 800;
         public const int HEIGHT = 480;
-        public const int TILESIZE = 40;
 
-        GraphicsDeviceManager graphics;
-        SpriteBatch batch;
-        SpriteFont font;
-        List<Sprite> sprites;
-        TileSprite player;
+        private GraphicsDeviceManager graphics;
+        private List<Sprite> sprites;
+
+        public SpriteBatch Batch { get; private set; }
+        public SpriteFont Font { get; private set; }
+        public Player Player { get; private set; }
+        public TileMap Map { get; private set; }
 
         public SlideGame(bool fullscreen)
         {
@@ -60,39 +61,38 @@ namespace SlideShared
             return (T)Enum.GetValues(typeof(T)).GetValue(value);
         }
 
+        private TileMap CreateRandomMap(int xTiles, int yTiles)
+        {
+            var map = new TileMap(this, xTiles, yTiles);
+            var random = new Random();
+            for (int x = 0; x < map.Width; ++x)
+            {
+                for (int y = 0; y < map.Height; ++y)
+                {
+                    map.Tiles[x][y].SetTileType(GetRandomEnumValue<TileType>(random));
+                }
+            }
+            return map;
+        }
+
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
         /// all of your content.
         /// </summary>
         protected override void LoadContent()
         {
-            batch = new SpriteBatch(GraphicsDevice);
-            font = Content.Load<SpriteFont>("Fonts/arial");
+            Batch = new SpriteBatch(GraphicsDevice);
+            Font = Content.Load<SpriteFont>("Fonts/arial");
 
             TileAtlas.LoadTextures(Content);
 
-            var map = new TileMap(this, batch, WIDTH / TILESIZE, HEIGHT / TILESIZE);
-            Components.Add(map);
-            sprites.Add(map);
+            Map = CreateRandomMap(WIDTH / Tile.SIZE, HEIGHT / Tile.SIZE);
+            Components.Add(Map);
+            sprites.Add(Map);
 
-            var random = new Random();
-            for(int x=0; x<map.Width; ++x)
-            {
-                for(int y=0; y<map.Height; ++y)
-                {
-                    map.Tiles[x][y].SetTileType(GetRandomEnumValue<TileType>(random));
-                }
-            }
-            map.Tiles[1][1].SetTileType(TileType.Stop);
-            map.Tiles[2][2].SetTileType(TileType.Wall);
-            map.Tiles[3][3].SetTileType(TileType.Speed);
-
-            player = new TileSprite(this, batch);
-            player.Texture = Content.Load<Texture2D>("Textures/player");
-            player.SetTileCount(1, 1);
-            player.SetTilePosition(0, 0);
-            Components.Add(player);
-            sprites.Add(player);            
+            Player = new Player(this);
+            Components.Add(Player);
+            sprites.Add(Player);
         }
 
         /// <summary>
@@ -114,9 +114,9 @@ namespace SlideShared
         {
             GraphicsDevice.Clear(Color.White);
 
-            batch.Begin();
+            Batch.Begin();
             sprites.ForEach(sprite => sprite.Draw());
-            batch.End();
+            Batch.End();
 
             base.Draw(gameTime);
         }

@@ -12,8 +12,8 @@ namespace SlideShared
         public int Width { get; private set; }
         public int Height { get; private set; }
 
-        public TileMap(Game game, SpriteBatch batch, int width, int height)
-        : base(game, batch)
+        public TileMap(Game game, int width, int height)
+        : base(game)
         {
             Width = width;
             Height = height;
@@ -24,7 +24,7 @@ namespace SlideShared
                 Tiles[x] = new Tile[Height];
                 for (int y = 0; y < Height; ++y)
                 {
-                    Tiles[x][y] = new Tile(game, batch, x, y);
+                    Tiles[x][y] = new Tile(game, x, y);
                 }
             }
         }
