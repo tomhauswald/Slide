@@ -11,8 +11,8 @@ namespace SlideShared
     /// </summary>
     public class SlideGame : Game
     {
-        public const int WIDTH = 800;
-        public const int HEIGHT = 480;
+        public const int WIDTH = 1280;
+        public const int HEIGHT = 720;
 
         private GraphicsDeviceManager graphics;
         private List<Sprite> sprites;
@@ -70,6 +70,7 @@ namespace SlideShared
                 for (int y = 0; y < map.Height; ++y)
                 {
                     map.Tiles[x][y].SetTileType(GetRandomEnumValue<TileType>(random));
+                    map.Tiles[x][y].SetDirection(GetRandomEnumValue<Direction>(random));
                 }
             }
             return map;

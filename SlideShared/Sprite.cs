@@ -6,76 +6,81 @@ namespace SlideShared
 {
     public class Sprite : GameComponent
     {
-        protected Vector2 center { get; private set; }
+        private Texture2D texture;
+        private Rectangle? subTextureRect;
+        private Vector2 offset;
+        private Point absoluteSize;
 
-        // Texture.
-        public Texture2D Texture { get; set; }
-        public Rectangle? SubTextureRect { get; set; }
-
-        // Position.
-        public Vector2 Position { get; set; }
-        public float X { get { return Position.X; } set { Position = new Vector2(value, Position.Y); } }
-        public float Y { get { return Position.Y; } set { Position = new Vector2(Position.X, value); } }
-
-        // Scale factors.
+        public Vector2 Center { get; set; }
         public Vector2 Scale { get; set; }
-        public float HorizontalScale { get { return Scale.X; } set { Scale = new Vector2(value, Scale.Y); } }
-        public float VerticalScale { get { return Scale.Y; } set { Scale = new Vector2(Scale.X, value); } }
-
-        // Rotation.
         public float Rotation { get; set; }
-
-        // Show / hide sprite.
         public bool Visible { get; set; }
 
         public Sprite(Game game)
         : base(game)
         {
-            Position = Vector2.Zero;
-            Rotation = 0.0f;
+            texture = null;
+            subTextureRect = null;
+            offset = Vector2.Zero;
+            absoluteSize = Point.Zero;
+
+            Center = Vector2.Zero;
             Scale = Vector2.One;
+            Rotation = 0.0f;
             Visible = true;
         }
 
-        public override void Update(GameTime gameTime)
+        public void SetTexture(Texture2D texture)
         {
-            // Recalculate center point.
-            if (Texture != null)
-            {
-                center = new Vector2(Texture.Width / 2.0f, Texture.Height / 2.0f);
-            }
-            else
-            {
-                center = Vector2.Zero;
-            }
-
-            base.Update(gameTime);
+            this.texture = texture;
+            offset = new Vector2(texture.Width * 0.5f, texture.Height * 0.5f);
         }
 
-        public Vector2 GetAbsoluteSize()
+        public void SetSubTextureRect(Rectangle rect)
         {
-            return new Vector2(Texture.Width * HorizontalScale, Texture.Height * VerticalScale);
+            subTextureRect = rect;
+            offset = new Vector2(rect.Width * 0.5f, rect.Height * 0.5f);
         }
 
-        public void SetAbsoluteSize(float width, float height)
+        public void SetAbsoluteSize(Point size)
         {
-            HorizontalScale = width / Texture.Width;
-            VerticalScale = height / Texture.Height;
+            absoluteSize = size;
+            if(texture != null)
+            {
+                Scale = new Vector2(
+                    (float)size.X / (subTextureRect.HasValue ? subTextureRect.Value.Width : texture.Width),
+                    (float)size.Y / (subTextureRect.HasValue ? subTextureRect.Value.Height : texture.Height));
+            }
+        }
+
+        public Point GetAbsoluteSize()
+        {
+            return absoluteSize;
         }
 
         // Batch must be started before draw call.
         public virtual void Draw()
         {
-            if (Visible && Texture != null)
+            if (Visible && texture != null)
             {
                 ((SlideGame)Game).Batch.Draw(
-                    texture: Texture,
-                    position: Position,
-                    sourceRectangle: SubTextureRect,
-                    origin: center,
+                    texture: texture,
+                    position: Center,
+                    sourceRectangle: subTextureRect,
+                    origin: offset,
                     rotation: Rotation / 180.0f * 2.0f * (float)Math.PI,
                     scale: Scale);
             }
+        }
+
+        public Vector2 GetTopLeftCorner()
+        {
+            return Center - GetAbsoluteSize().ToVector2() * 0.5f;
+        }
+
+        public void SetTopLeftCorner(Vector2 corner)
+        {
+            Center = corner + GetAbsoluteSize().ToVector2() * 0.5f;
         }
     }
 }

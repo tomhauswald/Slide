@@ -20,7 +20,7 @@ namespace SlideDroid
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
-            using (Game game = new SlideGame(true, 800, 480))
+            using (Game game = new SlideGame(true))
             {
                 SetContentView((View)game.Services.GetService(typeof(View)));
                 game.Run();

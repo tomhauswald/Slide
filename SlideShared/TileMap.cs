@@ -24,9 +24,33 @@ namespace SlideShared
                 Tiles[x] = new Tile[Height];
                 for (int y = 0; y < Height; ++y)
                 {
-                    Tiles[x][y] = new Tile(game, x, y);
+                    Tiles[x][y] = new Tile(game, this, x, y, Direction.Right);
                 }
             }
+        }
+
+        public Point GetTileCoordinates(Vector2 worldPosition)
+        {
+            return new Point(
+                ((int)(worldPosition.X / Tile.SIZE)),
+                ((int)(worldPosition.Y / Tile.SIZE)));
+        }
+
+        public Vector2 GetWorldCoordinates(Point tileCoordinates)
+        {
+            return new Vector2(
+                tileCoordinates.X * Tile.SIZE,
+                tileCoordinates.Y * Tile.SIZE);
+        }
+
+        public Tile GetTileAt(Vector2 worldPosition)
+        {
+            return GetTileAt(GetTileCoordinates(worldPosition));
+        }
+
+        public Tile GetTileAt(Point tileCoordinates)
+        {
+            return Tiles[tileCoordinates.X][tileCoordinates.Y];
         }
 
         public override void Update(GameTime gameTime)

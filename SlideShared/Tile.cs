@@ -14,18 +14,27 @@ namespace SlideShared
         Speed
     }
 
-    public class Tile : TileSprite
+    public class Tile : Sprite
     {
-        public const int SIZE = 40;
+        public const int SIZE = 64;
 
+        private TileMap map;
         private TileType type;
+        private Direction direction;
 
-        public Tile(Game game, int x, int y)
+        public int X { get; private set; }
+        public int Y { get; private set; }
+
+        public Tile(Game game, TileMap map, int x, int y, Direction direction)
         : base(game)
         {
+            this.map = map;
+            SetDirection(direction);
             SetTileType(TileType.Plain);
-            SetTileCount(1, 1);
-            SetTilePosition(x, y);
+            SetAbsoluteSize(new Point(SIZE));
+            SetTopLeftCorner(map.GetWorldCoordinates(new Point(x, y)));
+            X = x;
+            Y = y;
         }
 
         public TileType GetTileType()
@@ -37,7 +46,35 @@ namespace SlideShared
         public void SetTileType(TileType type)
         {
             this.type = type;
-            Texture = TileAtlas.Textures[type];
+            SetTexture(TileAtlas.Textures[type]);
+        }
+
+        public Direction GetDirection()
+        {
+            return direction;
+        }
+
+        public void SetDirection(Direction direction)
+        {
+            this.direction = direction;
+            switch (direction)
+            {
+                case Direction.Right:
+                    Rotation = 0.0f;
+                    break;
+
+                case Direction.Left:
+                    Rotation = 180.0f;
+                    break;
+
+                case Direction.Up:
+                    Rotation = 90.0f;
+                    break;
+
+                case Direction.Down:
+                    Rotation = 270.0f;
+                    break;
+            }
         }
     }
 }
