@@ -37,15 +37,15 @@ namespace SlideShared
         public Player(Game game)
             :base(game)
         {
-            SetTexture(game.Content.Load<Texture2D>("Textures/red"));
-            SetSubTextureRect(new Rectangle(0, 0, 32, 32));
-            SetAbsoluteSize(new Point(Tile.SIZE));
-            SetTopLeftCorner(Vector2.Zero);
-            
             velocity = Vector2.Zero;
             direction = Direction.Down;
             map = ((SlideGame)game).Map;
 
+            SetTexture(game.Content.Load<Texture2D>("Textures/red"));
+            SetSubTextureRect(new Rectangle(0, 0, 32, 32));
+            SetAbsoluteSize(new Point(Tile.SIZE));
+            SetTopLeftCorner(map.GetWorldCoordinates(new Point(1, 1)));
+            
             MovementState = PlayerMovementState.Idle;
         }
 
@@ -81,7 +81,7 @@ namespace SlideShared
                     break;
 
                 case PlayerMovementState.Walk:
-                    if(Vector2.Distance(GetTopLeftCorner(), targetTile.GetTopLeftCorner()) <= 1.0f)
+                    if(CenteredOnTile(targetTile))
                     {
                         SetTopLeftCorner(targetTile.GetTopLeftCorner());
                         Stop();
@@ -89,11 +89,23 @@ namespace SlideShared
                     break;
 
                 case PlayerMovementState.Slide:
-                    if (Vector2.Distance(GetTopLeftCorner(), tile.GetTopLeftCorner()) <= 1.0f)
+                    if (CenteredOnTile(targetTile))
                     {
-                        if (tile.GetTileType() == TileType.Stop)
+                        SetTopLeftCorner(targetTile.GetTopLeftCorner());
+                        switch (targetTile.GetTileType())
                         {
-                            Stop();
+                            case TileType.Stop:
+                                Stop();
+                                break;
+
+                            case TileType.Wall:
+                            case TileType.Plain:
+                                targetTile = targetTile.GetNeighbour(direction);
+                                break;
+
+                            case TileType.Speed:
+                                Slide(targetTile.GetDirection());
+                                break;
                         }
                     }
                     break;
@@ -103,10 +115,17 @@ namespace SlideShared
             base.Update(gameTime);
         }
 
+        private bool CenteredOnTile(Tile tile)
+        {
+            const float eps = 1.0f;
+            return Vector2.Distance(GetTopLeftCorner(), tile.GetTopLeftCorner()) <= eps;
+        }
+
         public void Stop()
         {
             MovementState = PlayerMovementState.Idle;
             velocity = Vector2.Zero;
+            targetTile = null;
         }
 
         public void Walk(Direction direction)
@@ -143,20 +162,24 @@ namespace SlideShared
             this.direction = direction;
             switch (direction)
             {
-                case Direction.Up:
-                    velocity = new Vector2(0.0f, -SLIDESPEED);
-                    break;
-
                 case Direction.Left:
                     velocity = new Vector2(-SLIDESPEED, 0.0f);
-                    break;
-
-                case Direction.Right:
-                    velocity = new Vector2(SLIDESPEED, 0.0f);
+                    targetTile = map.GetTileAt(GetTopLeftCorner() + new Vector2(-Tile.SIZE, 0.0f));
                     break;
 
                 case Direction.Down:
                     velocity = new Vector2(0.0f, SLIDESPEED);
+                    targetTile = map.GetTileAt(GetTopLeftCorner() + new Vector2(0.0f, Tile.SIZE));
+                    break;
+
+                case Direction.Right:
+                    velocity = new Vector2(SLIDESPEED, 0.0f);
+                    targetTile = map.GetTileAt(GetTopLeftCorner() + new Vector2(Tile.SIZE, 0.0f));
+                    break;
+
+                case Direction.Up:
+                    velocity = new Vector2(0.0f, -SLIDESPEED);
+                    targetTile = map.GetTileAt(GetTopLeftCorner() + new Vector2(0.0f, -Tile.SIZE));
                     break;
             }
 

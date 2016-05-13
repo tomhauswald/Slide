@@ -25,16 +25,27 @@ namespace SlideShared
         public int X { get; private set; }
         public int Y { get; private set; }
 
-        public Tile(Game game, TileMap map, int x, int y, Direction direction)
+        public Tile(Game game, TileMap map, int x, int y)
         : base(game)
         {
             this.map = map;
-            SetDirection(direction);
+            SetDirection(Direction.Down);
             SetTileType(TileType.Plain);
-            SetAbsoluteSize(new Point(SIZE));
             SetTopLeftCorner(map.GetWorldCoordinates(new Point(x, y)));
             X = x;
             Y = y;
+        }
+
+        public Tile GetNeighbour(Direction direction)
+        {
+            switch (direction)
+            {
+                case Direction.Up: return Y > 0 ? map.Tiles[X][Y - 1] : null;
+                case Direction.Left: return X > 0 ? map.Tiles[X - 1][Y] : null;
+                case Direction.Down: return Y < map.Height - 1 ? map.Tiles[X][Y + 1] : null;
+                case Direction.Right: return X < map.Width - 1 ? map.Tiles[X + 1][Y] : null;
+                default: return null;
+            }
         }
 
         public TileType GetTileType()
@@ -46,7 +57,9 @@ namespace SlideShared
         public void SetTileType(TileType type)
         {
             this.type = type;
-            SetTexture(TileAtlas.Textures[type]);
+            SetTexture(TileAtlas.GetTilesheetTexture());
+            SetSubTextureRect(TileAtlas.GetTileRect(type));
+            SetAbsoluteSize(new Point(SIZE));
         }
 
         public Direction GetDirection()
@@ -60,19 +73,19 @@ namespace SlideShared
             switch (direction)
             {
                 case Direction.Right:
-                    Rotation = 0.0f;
-                    break;
-
-                case Direction.Left:
-                    Rotation = 180.0f;
-                    break;
-
-                case Direction.Up:
                     Rotation = 90.0f;
                     break;
 
-                case Direction.Down:
+                case Direction.Left:
                     Rotation = 270.0f;
+                    break;
+
+                case Direction.Up:
+                    Rotation = 0.0f;
+                    break;
+
+                case Direction.Down:
+                    Rotation = 180.0f;
                     break;
             }
         }

@@ -68,7 +68,7 @@ namespace SlideShared
                     position: Center,
                     sourceRectangle: subTextureRect,
                     origin: offset,
-                    rotation: Rotation / 180.0f * 2.0f * (float)Math.PI,
+                    rotation: Rotation / 180.0f * (float)Math.PI,
                     scale: Scale);
             }
         }

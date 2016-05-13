@@ -65,15 +65,24 @@ namespace SlideShared
         {
             var map = new TileMap(this, xTiles, yTiles);
             var random = new Random();
-            for (int x = 0; x < map.Width; ++x)
+
+            for (int x = 1; x < map.Width - 1; ++x)
             {
-                for (int y = 0; y < map.Height; ++y)
+                for (int y = 1; y < map.Height - 1; ++y)
                 {
                     map.Tiles[x][y].SetTileType(GetRandomEnumValue<TileType>(random));
-                    map.Tiles[x][y].SetDirection(GetRandomEnumValue<Direction>(random));
+                    if(map.Tiles[x][y].GetTileType() == TileType.Speed)
+                        map.Tiles[x][y].SetDirection(GetRandomEnumValue<Direction>(random));
                 }
             }
+
+            map.Tiles[1][1].SetTileType(TileType.Plain);
             return map;
+        }
+
+        private TileMap LoadMapFile(string file)
+        {
+            return new TileMap(this, file);
         }
 
         /// <summary>
@@ -85,13 +94,14 @@ namespace SlideShared
             Batch = new SpriteBatch(GraphicsDevice);
             Font = Content.Load<SpriteFont>("Fonts/arial");
 
-            TileAtlas.LoadTextures(Content);
+            TileAtlas.Load(Content, "Textures/tilesheet_complete_2X");
 
-            Map = CreateRandomMap(WIDTH / Tile.SIZE, HEIGHT / Tile.SIZE);
+            Map = LoadMapFile("map.txt");
             Components.Add(Map);
             sprites.Add(Map);
 
             Player = new Player(this);
+            Player.SetTopLeftCorner(Map.PlayerStartTile.GetTopLeftCorner());
             Components.Add(Player);
             sprites.Add(Player);
         }
